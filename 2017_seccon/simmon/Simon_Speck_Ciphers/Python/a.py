@@ -786,8 +786,8 @@ class TestCipherModesSimon:
         block_size = 64
         key_size = 96
         
-        chars="abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ!#$%&()=~|-^\`{@[+*};:],./_<>?"
-        #chars="abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ!#$%&()=~|-^\`{@[+*};:],./_<>?\"\'"
+        #chars="abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ!#$%_1234567890?"
+        chars="1234567890abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ!#$%&()=~|-^\`{@[+*};:],./_<>?\"\'"
         for s1 in chars:
             for s2 in chars:
                 for s3 in chars:
@@ -795,14 +795,11 @@ class TestCipherModesSimon:
                         #key = 0x534543434f4e7b
                         #key = hex(int("534543434f4e7b"+("{0:x}".format(ord(s1))) + ("{0:x}".format(ord(s2))) + ("{0:x}".format(ord(s3))) + ("{0:x}".format(ord(s4)))+"7d",16))
                         
-                        key_bytes = bytes([0x53, 0x45, 0x43, 0x43, 0x4f, 0x4e, 0x7b, str(ord(s1)), str(ord(s2)), str(ord(s3)),str(ord(s4))],0x7d)
-                        key_int = int(binascii.hexlify(key_bytes),16) 
+                        key_bytes = bytes([0x53, 0x45, 0x43, 0x43, 0x4f, 0x4e, 0x7b, ord(s1),ord(s2), ord(s3),ord(s4),0x7d])
+                        key_int = int.from_bytes(key_bytes, byteorder='big', signed='False') 
                         
-                        
-                        c = SpeckCipher(key_int, key_size, block_size, 'ECB')
-                        print(type(c.encrypt(plaintxt)))
-                        exit()
-                        if c.encrypt(plaintxt) == 13500967849109763253:
+                        c = SimonCipher(key_int, key_size, block_size, 'ECB')
+                        if c.encrypt(plaintxt) == ciphertxt:
                             print(s1)
                             print(s2)
                             print(s3)
